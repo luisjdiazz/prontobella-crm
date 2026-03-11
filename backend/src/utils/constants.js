@@ -7,75 +7,75 @@ const RETOUCH_INTERVALS = {
 
 const TEMPLATES = {
   welcome: {
-    text: '¡Hola {{name}}! 💜 Bienvenida a ProntoBella. Gracias por visitarnos. Tu código VIP es: {{vip_code}} — úsalo para obtener 10% de descuento en tu próxima visita. ¡Te esperamos pronto! ✨',
+    text: 'hola {{name}}, bienvenida a prontobella. gracias por visitarnos, tu codigo vip es {{vip_code}}, con eso tienes 10% de descuento en tu proxima visita. te esperamos pronto',
   },
   miss_you_30d: {
-    text: '¡Hola {{name}}! Hace un tiempo que no te vemos por ProntoBella 💜 Te extrañamos. Ven esta semana y recibe 15% de descuento en cualquier servicio. ¿Te agendamos? 📞',
+    text: 'hola {{name}}, hace rato no te vemos por aqui y te extranamos. ven esta semana y te damos 15% de descuento en cualquier servicio. te agendamos?',
   },
   miss_you_60d: {
-    text: '{{name}}, ¡te echamos de menos! 🥺 Ha pasado mucho tiempo sin verte. Tenemos un regalo especial esperándote: 20% OFF en el servicio que quieras. Solo dinos cuándo vienes 💜',
+    text: '{{name}} hace mucho que no vienes por prontobella, te tenemos un 20% de descuento en lo que tu quieras. dinos cuando vienes y te agendamos',
   },
   retouch_color: {
-    text: '¡Hola {{name}}! 🎨 Ya pasaron {{weeks}} semanas desde tu último color/highlights. ¿Lista para refrescar tu look? Agenda tu cita: 809-682-0069 💜',
+    text: 'hola {{name}}, ya pasaron {{weeks}} semanas desde tu ultimo color. cuando quieras refrescar el look nos dices, te agendamos al 809-682-0069',
   },
   retouch_keratina: {
-    text: '¡Hola {{name}}! 🧴 Tu tratamiento de keratina ya cumplió su ciclo. Es momento de renovar para mantener tu cabello espectacular. ¿Agendamos? 809-682-0069 💜',
+    text: 'hola {{name}}, tu keratina ya cumplio su ciclo, es buen momento para renovar y que el pelo se mantenga brutal. te agendamos? 809-682-0069',
   },
   retouch_acrilico: {
-    text: '¡Hola {{name}}! 💎 Tus uñas necesitan un relleno — ya han pasado {{weeks}} semanas. ¿Vienes esta semana? Agenda: 809-682-0069 💅',
+    text: 'hola {{name}}, tus unas ya necesitan relleno, ya van {{weeks}} semanas. vienes esta semana? 809-682-0069',
   },
   retouch_pestanas: {
-    text: '¡Hola {{name}}! 👁️ Es hora del retoque de tus pestañas — ya pasaron {{weeks}} semanas. ¿Te agendamos? 809-682-0069 ✨',
+    text: 'hola {{name}}, ya toca retoque de pestanas, pasaron {{weeks}} semanas. te agendamos? 809-682-0069',
   },
   birthday: {
-    text: '¡Feliz cumpleaños, {{name}}! 🎂🎉 ProntoBella te regala 20% de descuento en cualquier servicio durante esta semana. ¡Ven a celebrar con nosotras! 💜',
+    text: 'feliz cumple {{name}}! de parte de todo el equipo de prontobella te deseamos un dia super lindo. te regalamos 20% de descuento esta semana en cualquier servicio, ven a celebrar con nosotras',
   },
   loyalty_5th: {
-    text: '¡{{name}}, eres increíble! 🏆 Ya completaste 5 visitas en ProntoBella. Como agradecimiento, tu próximo servicio tiene 25% de descuento. ¡Gracias por confiar en nosotras! 💜',
+    text: '{{name}} ya llevas 5 visitas con nosotras, eso es increible. como agradecimiento tu proximo servicio tiene 25% de descuento. gracias por confiar en prontobella',
   },
 };
 
-// Follow-up message templates — Dominican style, warm & personal
+// Follow-up message templates — natural, human tone
 const FOLLOWUP_TEMPLATES = {
   post_visit: {
     label: 'Gracias por tu visita',
-    icon: '💜',
-    text: '¡Hola {{name}}! 💜 Gracias por visitarnos hoy en ProntoBella. Esperamos que te haya encantado tu servicio. ¡Nos vemos pronto, bella! ✨',
+    icon: 'gracias',
+    text: 'hola {{name}}, gracias por venir hoy a prontobella. esperamos que te haya encantado, nos vemos pronto',
   },
   followup_15d: {
-    label: 'Recordatorio 15 días',
-    icon: '💌',
-    text: '¡Hola {{name}}! 💌 ¿Cómo te ha ido con tu look? Ya pasaron 15 días desde tu última visita. Si necesitas un retoque o quieres consentirte, aquí estamos para ti. ¡Agenda tu cita! 809-682-0069 💜',
+    label: 'Recordatorio 15 dias',
+    icon: 'recordar',
+    text: 'hola {{name}}, como te ha ido con tu look? ya pasaron 15 dias desde tu ultima visita. si necesitas retoque o quieres consentirte aqui estamos, 809-682-0069',
   },
   miss_you_30d: {
-    label: 'Te extrañamos (30 días)',
-    icon: '🥺',
-    text: '¡{{name}}, te extrañamos! 🥺 Ya pasó un mes sin verte por ProntoBella. Tenemos un 15% de descuento esperándote en cualquier servicio. ¿Cuándo te agendamos? 📞 809-682-0069 💜',
+    label: 'Te extranamos (30 dias)',
+    icon: 'extranar',
+    text: '{{name}} te extranamos, ya paso un mes sin verte por prontobella. te tenemos 15% de descuento en cualquier servicio, cuando te agendamos? 809-682-0069',
   },
   miss_you_60d: {
-    label: 'Vuelve (60 días)',
-    icon: '😢',
-    text: '{{name}}, ¿dónde andas? 😢 Hace 2 meses que no nos visitas y te echamos de menos. Te tenemos un regalo: 20% OFF en lo que tú quieras. Solo escríbenos y te agendamos. ¡Te esperamos! 💜✨',
+    label: 'Vuelve (60 dias)',
+    icon: 'volver',
+    text: '{{name}} donde andas? hace 2 meses que no vienes y te echamos de menos. te tenemos 20% de descuento en lo que tu quieras, solo escribenos y te agendamos',
   },
   birthday: {
-    label: 'Feliz cumpleaños',
-    icon: '🎂',
-    text: '¡Feliz cumpleaños, {{name}}! 🎂🎉 Todo el equipo de ProntoBella te desea un día increíble. Tu regalo: 20% de descuento esta semana en cualquier servicio. ¡Ven a celebrar con nosotras! 💜',
+    label: 'Feliz cumple',
+    icon: 'cumple',
+    text: 'feliz cumple {{name}}! todo el equipo de prontobella te desea un dia increible. te regalamos 20% de descuento esta semana en cualquier servicio, ven a celebrar con nosotras',
   },
   retouch: {
     label: 'Retoque pendiente',
-    icon: '💅',
-    text: '¡Hola {{name}}! 💅 Ya es hora de tu retoque de {{procedure}}. No dejes que se pierda tu look. ¿Te agendamos esta semana? 📞 809-682-0069 💜',
+    icon: 'retoque',
+    text: 'hola {{name}}, ya toca tu retoque de {{procedure}}, no dejes que se pierda el look. te agendamos esta semana? 809-682-0069',
   },
   loyalty: {
     label: 'Cliente fiel',
-    icon: '🏆',
-    text: '¡{{name}}, eres una de nuestras clientas estrella! 🏆 Con {{visits}} visitas, te ganaste 25% de descuento en tu próximo servicio. ¡Gracias por confiar en ProntoBella! 💜',
+    icon: 'fiel',
+    text: '{{name}} ya llevas {{visits}} visitas con nosotras, eso nos encanta. te ganaste 25% de descuento en tu proximo servicio, gracias por confiar en prontobella',
   },
   custom: {
     label: 'Mensaje personalizado',
-    icon: '✏️',
-    text: '¡Hola {{name}}! ',
+    icon: 'custom',
+    text: 'hola {{name}}, ',
   },
 };
 
