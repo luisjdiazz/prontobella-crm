@@ -2,7 +2,7 @@ import { Outlet } from 'react-router-dom';
 
 export default function PublicLayout() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-full bg-background overflow-hidden">
       <Outlet />
     </div>
   );

@@ -20,20 +20,44 @@
   --font-body: "Outfit", sans-serif;
 }
 
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   font-family: var(--font-body);
   color: var(--color-text);
   background-color: var(--color-background);
   margin: 0;
+  height: 100%;
+  overflow: hidden;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+
+#root {
+  height: 100%;
+  overflow: hidden;
 }
 
 /* Prevent iOS zoom on input focus */
-@supports (-webkit-touch-callout: none) {
-  input, select, textarea {
-    font-size: 16px !important;
-  }
+input, select, textarea {
+  font-size: 16px !important;
+  touch-action: manipulation;
+}
+
+/* Prevent pull-to-refresh and bounce scroll */
+button, a, [role="button"] {
+  touch-action: manipulation;
+}
+
+/* Scrollable containers only where needed */
+.scroll-area {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 /* Safe area for notch phones */

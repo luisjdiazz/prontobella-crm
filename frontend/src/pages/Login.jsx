@@ -74,7 +74,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+    <div className="h-full bg-background flex flex-col items-center justify-center p-4 scroll-area">
       <div className="mb-8 text-center">
         <img src="/logo.svg" alt="ProntoBella" className="w-20 h-20 mx-auto mb-4" />
         <h1 className="font-heading text-3xl font-bold text-primary">ProntoBella</h1>

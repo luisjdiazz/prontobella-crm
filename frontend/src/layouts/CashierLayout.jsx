@@ -11,9 +11,9 @@ export default function CashierLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-full bg-background flex flex-col overflow-hidden">
       {/* Top bar */}
-      <header className="bg-primary text-white px-4 py-3 flex items-center justify-between">
+      <header className="shrink-0 bg-primary text-white px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <img src="/logo.svg" alt="PB" className="w-8 h-8" />
           <span className="font-heading font-semibold text-lg">ProntoBella</span>
@@ -30,7 +30,7 @@ export default function CashierLayout() {
       </header>
 
       {/* Content */}
-      <main className="p-4 max-w-lg mx-auto">
+      <main className="flex-1 p-4 max-w-lg mx-auto w-full scroll-area">
         <Outlet />
       </main>
     </div>

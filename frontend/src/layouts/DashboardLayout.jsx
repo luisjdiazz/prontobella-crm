@@ -22,7 +22,7 @@ export default function DashboardLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="h-full bg-background flex overflow-hidden">
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-surface border-r border-gray-100 transform transition-transform duration-200
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static`}>
@@ -74,7 +74,7 @@ export default function DashboardLayout() {
       )}
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Top bar (mobile) */}
         <header className="lg:hidden bg-surface border-b border-gray-100 px-4 py-3 flex items-center justify-between">
           <button
@@ -87,7 +87,7 @@ export default function DashboardLayout() {
           <div className="w-8" />
         </header>
 
-        <main className="flex-1 p-4 lg:p-8 overflow-auto">
+        <main className="flex-1 p-4 lg:p-8 scroll-area">
           <Outlet />
         </main>
       </div>

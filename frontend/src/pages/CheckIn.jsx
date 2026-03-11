@@ -40,7 +40,7 @@ export default function CheckIn() {
 
   if (step === 'success') {
     return (
-      <div className="min-h-[100dvh] bg-gradient-to-b from-primary to-primary-deep flex flex-col items-center justify-center p-6">
+      <div className="h-full scroll-area bg-gradient-to-b from-primary to-primary-deep flex flex-col items-center justify-center p-6">
         <div className="w-full max-w-sm bg-white rounded-3xl shadow-xl p-8 text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
             <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -74,7 +74,7 @@ export default function CheckIn() {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-gradient-to-b from-primary to-primary-deep flex flex-col items-center justify-center p-6">
+    <div className="h-full scroll-area bg-gradient-to-b from-primary to-primary-deep flex flex-col items-center justify-center p-6">
       <div className="mb-8 text-center">
         <img src="/logo.svg" alt="ProntoBella" className="w-20 h-20 mx-auto mb-3" />
         <h1 className="font-heading text-3xl font-bold text-white">ProntoBella</h1>
