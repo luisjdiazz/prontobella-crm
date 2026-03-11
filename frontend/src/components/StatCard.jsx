@@ -10,13 +10,15 @@ export default function StatCard({ icon, label, value, color = 'primary' }) {
   };
 
   return (
-    <Card className="flex items-center gap-4">
-      <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${colors[color]}`}>
-        {icon}
-      </div>
+    <Card className={`!p-4 ${icon ? 'flex items-center gap-4' : ''}`}>
+      {icon && (
+        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${colors[color]}`}>
+          {icon}
+        </div>
+      )}
       <div>
-        <p className="text-sm text-text-light">{label}</p>
-        <p className="text-2xl font-bold font-heading">{value}</p>
+        <p className="text-xs text-text-light">{label}</p>
+        <p className={`text-2xl font-bold font-heading ${colors[color]?.split(' ')[0] || ''}`}>{value}</p>
       </div>
     </Card>
   );

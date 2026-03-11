@@ -157,6 +157,8 @@ export default function CashierHome() {
             onChange={(e) => setPhone(e.target.value)}
             placeholder="809-000-0000"
             className="flex-1"
+            inputMode="tel"
+            autoComplete="tel"
             onKeyDown={(e) => e.key === 'Enter' && searchClient()}
           />
           <Button onClick={searchClient} disabled={searching}>
