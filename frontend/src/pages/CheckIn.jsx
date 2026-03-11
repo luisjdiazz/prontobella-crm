@@ -7,6 +7,7 @@ export default function CheckIn() {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [acceptsPromos, setAcceptsPromos] = useState(true);
+  const [fromGoogle, setFromGoogle] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -20,7 +21,11 @@ export default function CheckIn() {
     setLoading(true);
     setError('');
     try {
-      const data = await api.post('/checkin', { name, phone, email, accepts_promos: acceptsPromos });
+      const data = await api.post('/checkin', {
+        name, phone, email,
+        accepts_promos: acceptsPromos,
+        from_google: fromGoogle,
+      });
       setResult(data);
       setStep('success');
     } catch (err) {
@@ -118,8 +123,8 @@ export default function CheckIn() {
           <button
             type="button"
             onClick={() => setAcceptsPromos(!acceptsPromos)}
-            className="flex items-center gap-3 p-4 rounded-2xl border-2 transition-colors text-left active:scale-[0.98]
-              ${acceptsPromos ? 'border-primary bg-primary-soft' : 'border-gray-200 bg-white'}"
+            className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-colors text-left active:scale-[0.98]
+              ${acceptsPromos ? 'border-primary bg-primary-soft' : 'border-gray-200 bg-white'}`}
           >
             <div className={`w-7 h-7 rounded-lg border-2 flex items-center justify-center shrink-0 transition-colors
               ${acceptsPromos ? 'bg-primary border-primary' : 'border-gray-300 bg-white'}`}>
@@ -131,6 +136,26 @@ export default function CheckIn() {
             </div>
             <span className="text-sm text-text">
               Quiero recibir promociones y ofertas exclusivas a mi celular
+            </span>
+          </button>
+
+          {/* Google checkbox */}
+          <button
+            type="button"
+            onClick={() => setFromGoogle(!fromGoogle)}
+            className={`flex items-center gap-3 p-3 rounded-2xl border-2 transition-colors text-left active:scale-[0.98]
+              ${fromGoogle ? 'border-primary bg-primary-soft' : 'border-gray-200 bg-white'}`}
+          >
+            <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors
+              ${fromGoogle ? 'bg-primary border-primary' : 'border-gray-300 bg-white'}`}>
+              {fromGoogle && (
+                <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+            </div>
+            <span className="text-xs text-text-light">
+              Nos encontraste por Google
             </span>
           </button>
 

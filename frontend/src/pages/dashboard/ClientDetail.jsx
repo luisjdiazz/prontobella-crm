@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useFetch } from '../../hooks/useFetch';
+import { api } from '../../api/client';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
@@ -18,6 +20,19 @@ export default function ClientDetail() {
   const { data: client, loading } = useFetch(`/clients/${id}`);
   const { data: visits, loading: loadingVisits } = useFetch(`/visits?client_id=${id}`);
   const { data: procedures, loading: loadingProcs } = useFetch(`/procedures?client_id=${id}`);
+  const [deleting, setDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await api.del(`/clients/${id}`);
+      navigate('/dashboard/clientes');
+    } catch {
+      setDeleting(false);
+      setConfirmDelete(false);
+    }
+  };
 
   if (loading) {
     return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
@@ -123,6 +138,30 @@ export default function ClientDetail() {
           )}
         </Card>
       </div>
+
+      {/* Delete */}
+      <Card className="!border-red-100">
+        {!confirmDelete ? (
+          <button
+            onClick={() => setConfirmDelete(true)}
+            className="text-sm text-danger hover:underline"
+          >
+            Eliminar cliente
+          </button>
+        ) : (
+          <div>
+            <p className="text-sm text-text mb-3">Segura que quieres eliminar a {client.name}? Se borraran todas sus visitas y datos.</p>
+            <div className="flex gap-2">
+              <Button variant="ghost" onClick={() => setConfirmDelete(false)} className="flex-1">
+                Cancelar
+              </Button>
+              <Button variant="danger" onClick={handleDelete} disabled={deleting} className="flex-1">
+                {deleting ? 'Eliminando...' : 'Si, eliminar'}
+              </Button>
+            </div>
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

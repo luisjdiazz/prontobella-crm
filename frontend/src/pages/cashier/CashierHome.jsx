@@ -84,7 +84,7 @@ export default function CashierHome() {
       const visit = await api.post('/visits', { client_id: client.id, created_by: 'cashier' });
       setCurrentVisit(visit);
       // Ask Google question for first-time clients
-      if (!client.visit_count || client.visit_count === 0) {
+      if (!client.visit_count || parseInt(client.visit_count) === 0) {
         setShowGoogleQuestion(true);
       } else {
         setShowProcedureModal(true);

@@ -4,7 +4,7 @@ const { normalizePhone, isValidPhone } = require('../utils/validators');
 
 exports.checkin = async (req, res, next) => {
   try {
-    const { name, phone, email, accepts_promos } = req.body;
+    const { name, phone, email, accepts_promos, from_google } = req.body;
 
     if (!name || !phone) {
       return res.status(400).json({ error: 'Nombre y teléfono son requeridos' });
@@ -25,7 +25,7 @@ exports.checkin = async (req, res, next) => {
         name,
         phone: normalizedPhone,
         email,
-        source: 'qr',
+        source: from_google ? 'google' : 'qr',
         accepts_promos: accepts_promos || false,
       });
       client = created.rows[0];
