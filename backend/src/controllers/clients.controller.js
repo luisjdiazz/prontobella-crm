@@ -1,5 +1,5 @@
 const clientsQ = require('../queries/clients.queries');
-const { normalizePhone, isValidPhone, generateVipCode } = require('../utils/validators');
+const { normalizePhone, isValidPhone } = require('../utils/validators');
 
 exports.getAll = async (req, res, next) => {
   try {
@@ -62,13 +62,11 @@ exports.create = async (req, res, next) => {
     if (!isValidPhone(normalizedPhone)) {
       return res.status(400).json({ error: 'Número de teléfono inválido' });
     }
-    const vipCode = generateVipCode();
     const result = await clientsQ.create({
       name,
       phone: normalizedPhone,
       email,
       birthday,
-      vip_code: vipCode,
       source: source || 'cashier',
     });
     res.status(201).json(result.rows[0]);

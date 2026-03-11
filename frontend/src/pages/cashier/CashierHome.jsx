@@ -226,10 +226,6 @@ export default function CashierHome() {
             </p>
           )}
 
-          {client.vip_code && (
-            <p className="text-sm text-secondary-deep mb-4">VIP: {client.vip_code}</p>
-          )}
-
           <Button
             onClick={registerVisit}
             disabled={visitLoading}

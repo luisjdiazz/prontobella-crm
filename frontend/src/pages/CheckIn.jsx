@@ -52,16 +52,6 @@ export default function CheckIn() {
           </h2>
           <p className="text-text-light text-sm mb-5">{result?.message}</p>
 
-          {result?.client?.vip_code && result?.client?.is_new && (
-            <div className="bg-primary-soft rounded-2xl p-5 mb-5">
-              <p className="text-xs text-text-light mb-1">Tu codigo VIP</p>
-              <p className="text-3xl font-bold text-primary font-heading tracking-wider">
-                {result.client.vip_code}
-              </p>
-              <p className="text-xs text-text-light mt-2">10% de descuento en tu proxima visita</p>
-            </div>
-          )}
-
           <button
             onClick={handleReset}
             className="w-full py-4 rounded-2xl border-2 border-primary text-primary font-medium text-base active:scale-[0.98] transition-transform"

@@ -1,6 +1,6 @@
 const clientsQ = require('../queries/clients.queries');
 const visitsQ = require('../queries/visits.queries');
-const { normalizePhone, isValidPhone, generateVipCode } = require('../utils/validators');
+const { normalizePhone, isValidPhone } = require('../utils/validators');
 
 exports.checkin = async (req, res, next) => {
   try {
@@ -21,13 +21,10 @@ exports.checkin = async (req, res, next) => {
     let isNew = false;
 
     if (!client) {
-      const vipCode = generateVipCode();
       const created = await clientsQ.create({
         name,
         phone: normalizedPhone,
         email,
-        birthday,
-        vip_code: vipCode,
         source: 'qr',
       });
       client = created.rows[0];
@@ -43,12 +40,11 @@ exports.checkin = async (req, res, next) => {
 
     res.status(201).json({
       message: isNew
-        ? `¡Bienvenida ${client.name}! Tu código VIP es: ${client.vip_code}`
-        : `¡Hola de nuevo ${client.name}! Tu visita ha sido registrada.`,
+        ? `Bienvenida ${client.name}! Tu visita ha sido registrada.`
+        : `Hola de nuevo ${client.name}! Tu visita ha sido registrada.`,
       client: {
         id: client.id,
         name: client.name,
-        vip_code: client.vip_code,
         is_new: isNew,
       },
       visit: visit.rows[0],
