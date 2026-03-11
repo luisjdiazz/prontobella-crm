@@ -39,42 +39,34 @@ const TEMPLATES = {
 const FOLLOWUP_TEMPLATES = {
   post_visit: {
     label: 'Gracias por tu visita',
-    icon: 'gracias',
     text: 'hola {{name}}, gracias por venir hoy a prontobella. esperamos que te haya encantado, nos vemos pronto',
   },
   followup_15d: {
     label: 'Recordatorio 15 dias',
-    icon: 'recordar',
     text: 'hola {{name}}, como te ha ido con tu look? ya pasaron 15 dias desde tu ultima visita. si necesitas retoque o quieres consentirte aqui estamos, 809-682-0069',
   },
   miss_you_30d: {
     label: 'Te extranamos (30 dias)',
-    icon: 'extranar',
     text: '{{name}} te extranamos, ya paso un mes sin verte por prontobella. te tenemos 15% de descuento en cualquier servicio, cuando te agendamos? 809-682-0069',
   },
   miss_you_60d: {
     label: 'Vuelve (60 dias)',
-    icon: 'volver',
     text: '{{name}} donde andas? hace 2 meses que no vienes y te echamos de menos. te tenemos 20% de descuento en lo que tu quieras, solo escribenos y te agendamos',
   },
   birthday: {
     label: 'Feliz cumple',
-    icon: 'cumple',
     text: 'feliz cumple {{name}}! todo el equipo de prontobella te desea un dia increible. te regalamos 20% de descuento esta semana en cualquier servicio, ven a celebrar con nosotras',
   },
   retouch: {
     label: 'Retoque pendiente',
-    icon: 'retoque',
     text: 'hola {{name}}, ya toca tu retoque de {{procedure}}, no dejes que se pierda el look. te agendamos esta semana? 809-682-0069',
   },
   loyalty: {
     label: 'Cliente fiel',
-    icon: 'fiel',
     text: '{{name}} ya llevas {{visits}} visitas con nosotras, eso nos encanta. te ganaste 25% de descuento en tu proximo servicio, gracias por confiar en prontobella',
   },
   custom: {
     label: 'Mensaje personalizado',
-    icon: 'custom',
     text: 'hola {{name}}, ',
   },
 };
