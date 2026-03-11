@@ -31,9 +31,15 @@ exports.getOne = async (req, res, next) => {
 
 exports.search = async (req, res, next) => {
   try {
-    const { phone } = req.query;
+    const { phone, q } = req.query;
+    // Search by name
+    if (q) {
+      const result = await clientsQ.findAll(q, 10, 0);
+      return res.json(result.rows);
+    }
+    // Search by phone
     if (!phone) {
-      return res.status(400).json({ error: 'Teléfono requerido para búsqueda' });
+      return res.status(400).json({ error: 'Teléfono o nombre requerido para búsqueda' });
     }
     const normalizedPhone = normalizePhone(phone);
     const result = await clientsQ.findByPhone(normalizedPhone);

@@ -18,8 +18,9 @@ const PROCEDURE_TYPES = [
 
 export default function CashierHome() {
   const navigate = useNavigate();
-  const [phone, setPhone] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [client, setClient] = useState(null);
+  const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState('');
   const [todayVisits, setTodayVisits] = useState([]);
@@ -48,13 +49,26 @@ export default function CashierHome() {
   }, []);
 
   const searchClient = async () => {
-    if (!phone.trim()) return;
+    if (!searchQuery.trim()) return;
     setSearching(true);
     setSearchError('');
     setClient(null);
+    setSearchResults([]);
     try {
-      const data = await api.get(`/clients/search?phone=${encodeURIComponent(phone)}`);
-      setClient(data);
+      const isPhone = /^\d/.test(searchQuery.trim());
+      if (isPhone) {
+        const data = await api.get(`/clients/search?phone=${encodeURIComponent(searchQuery)}`);
+        setClient(data);
+      } else {
+        const data = await api.get(`/clients/search?q=${encodeURIComponent(searchQuery)}`);
+        if (data.length === 0) {
+          setSearchError('No se encontraron clientes');
+        } else if (data.length === 1) {
+          setClient(data[0]);
+        } else {
+          setSearchResults(data);
+        }
+      }
     } catch (err) {
       setSearchError(err.message);
     } finally {
@@ -100,7 +114,8 @@ export default function CashierHome() {
   const nextClient = () => {
     setShowSuccess(false);
     setClient(null);
-    setPhone('');
+    setSearchQuery('');
+    setSearchResults([]);
     setCurrentVisit(null);
   };
 
@@ -153,12 +168,11 @@ export default function CashierHome() {
         <h2 className="font-heading text-lg font-semibold text-primary mb-3">Buscar Cliente</h2>
         <div className="flex gap-2">
           <Input
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="809-000-0000"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Nombre, apellido o telefono"
             className="flex-1"
-            inputMode="tel"
-            autoComplete="tel"
+            autoComplete="off"
             onKeyDown={(e) => e.key === 'Enter' && searchClient()}
           />
           <Button onClick={searchClient} disabled={searching}>
@@ -167,11 +181,31 @@ export default function CashierHome() {
         </div>
         {searchError && <p className="text-danger text-sm mt-2">{searchError}</p>}
 
+        {/* Search results list */}
+        {searchResults.length > 0 && (
+          <div className="mt-3 flex flex-col gap-2">
+            <p className="text-xs text-text-light">{searchResults.length} resultados</p>
+            {searchResults.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => { setClient(c); setSearchResults([]); }}
+                className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-primary-soft active:scale-[0.98] transition-all text-left"
+              >
+                <div>
+                  <p className="font-medium text-sm">{c.name}</p>
+                  <p className="text-xs text-text-light">{c.phone}</p>
+                </div>
+                <Badge color="primary">{c.visit_count || 0} visitas</Badge>
+              </button>
+            ))}
+          </div>
+        )}
+
         <button
           onClick={() => setShowNewClient(true)}
           className="mt-3 text-sm text-primary font-medium hover:underline"
         >
-          ➕ Nueva Cliente
+          + Nueva Cliente
         </button>
       </Card>
 
