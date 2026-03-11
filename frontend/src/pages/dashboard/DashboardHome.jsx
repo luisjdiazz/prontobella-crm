@@ -3,6 +3,7 @@ import StatCard from '../../components/StatCard';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import Spinner from '../../components/ui/Spinner';
+import { useNavigate } from 'react-router-dom';
 
 const PROCEDURE_LABELS = {
   color_highlights: { label: 'Color / Highlights', icon: '🎨' },
@@ -12,10 +13,12 @@ const PROCEDURE_LABELS = {
 };
 
 export default function DashboardHome() {
+  const navigate = useNavigate();
   const { data: stats, loading: loadingStats } = useFetch('/dashboard/stats');
   const { data: pipeline, loading: loadingPipeline } = useFetch('/dashboard/pipeline');
   const { data: retouches, loading: loadingRetouches } = useFetch('/dashboard/retoques');
   const { data: services, loading: loadingServices } = useFetch('/dashboard/servicios');
+  const { data: todayVisits, loading: loadingToday } = useFetch('/visits/today');
 
   if (loadingStats) {
     return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
@@ -57,6 +60,46 @@ export default function DashboardHome() {
           </div>
         </Card>
       )}
+
+      {/* Today's visits */}
+      <Card>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-heading text-lg font-semibold text-primary">
+            Visitas de Hoy ({todayVisits?.length || 0})
+          </h2>
+        </div>
+        {loadingToday ? (
+          <Spinner />
+        ) : !todayVisits?.length ? (
+          <p className="text-text-light text-sm">No hay visitas registradas hoy</p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {todayVisits.map((v) => (
+              <div
+                key={v.id}
+                className="flex items-center justify-between py-3 px-4 rounded-xl bg-gray-50 hover:bg-primary-soft transition-colors cursor-pointer"
+                onClick={() => navigate(`/dashboard/clientes/${v.client_id}`)}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-lg">{v.created_by === 'qr' ? '📱' : '💇'}</span>
+                  <div>
+                    <p className="font-medium text-sm">{v.client_name}</p>
+                    <p className="text-xs text-text-light">{v.client_phone}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge color={v.created_by === 'qr' ? 'secondary' : 'primary'}>
+                    {v.created_by === 'qr' ? 'QR' : 'Cajera'}
+                  </Badge>
+                  <span className="text-xs text-text-light">
+                    {new Date(v.visited_at).toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Upcoming retouches */}
