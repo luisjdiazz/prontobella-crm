@@ -42,21 +42,22 @@ exports.findByPhone = (phone) =>
     [phone]
   );
 
-exports.create = ({ name, phone, email, birthday, vip_code, source }) =>
+exports.create = ({ name, phone, email, birthday, source, accepts_promos }) =>
   query(
-    `INSERT INTO clients (name, phone, email, birthday, vip_code, source)
+    `INSERT INTO clients (name, phone, email, birthday, source, accepts_promos)
      VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-    [name, phone, email || null, birthday || null, vip_code || null, source || 'manual']
+    [name, phone, email || null, birthday || null, source || 'manual', accepts_promos || false]
   );
 
-exports.update = (id, { name, phone, email, birthday }) =>
+exports.update = (id, { name, phone, email, birthday, source }) =>
   query(
     `UPDATE clients SET
      name = COALESCE($1, name), phone = COALESCE($2, phone),
      email = COALESCE($3, email), birthday = COALESCE($4, birthday),
+     source = COALESCE($5, source),
      updated_at = NOW()
-     WHERE id = $5 RETURNING *`,
-    [name, phone, email, birthday, id]
+     WHERE id = $6 RETURNING *`,
+    [name, phone, email, birthday, source, id]
   );
 
 exports.remove = (id) =>

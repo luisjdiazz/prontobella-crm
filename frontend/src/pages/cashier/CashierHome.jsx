@@ -28,6 +28,7 @@ export default function CashierHome() {
 
   // Visit flow states
   const [visitLoading, setVisitLoading] = useState(false);
+  const [showGoogleQuestion, setShowGoogleQuestion] = useState(false);
   const [showProcedureModal, setShowProcedureModal] = useState(false);
   const [currentVisit, setCurrentVisit] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -82,12 +83,27 @@ export default function CashierHome() {
     try {
       const visit = await api.post('/visits', { client_id: client.id, created_by: 'cashier' });
       setCurrentVisit(visit);
-      setShowProcedureModal(true);
+      // Ask Google question for first-time clients
+      if (!client.visit_count || client.visit_count === 0) {
+        setShowGoogleQuestion(true);
+      } else {
+        setShowProcedureModal(true);
+      }
     } catch (err) {
       setToast({ message: err.message, type: 'error' });
     } finally {
       setVisitLoading(false);
     }
+  };
+
+  const handleGoogleAnswer = async (fromGoogle) => {
+    if (fromGoogle && client) {
+      try {
+        await api.put(`/clients/${client.id}`, { source: 'google' });
+      } catch {}
+    }
+    setShowGoogleQuestion(false);
+    setShowProcedureModal(true);
   };
 
   const registerProcedure = async (procedureType) => {
@@ -262,6 +278,32 @@ export default function CashierHome() {
           </div>
         )}
       </Card>
+
+      {/* Google question */}
+      <Modal
+        isOpen={showGoogleQuestion}
+        onClose={() => handleGoogleAnswer(false)}
+      >
+        <div className="text-center py-2">
+          <p className="font-heading text-xl font-semibold text-primary mb-6">
+            Clienta viene de Google?
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => handleGoogleAnswer(true)}
+              className="flex-1 py-5 rounded-2xl bg-green-500 text-white text-xl font-bold active:scale-[0.97] transition-transform"
+            >
+              Si
+            </button>
+            <button
+              onClick={() => handleGoogleAnswer(false)}
+              className="flex-1 py-5 rounded-2xl bg-gray-200 text-text text-xl font-bold active:scale-[0.97] transition-transform"
+            >
+              No
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Special procedure modal (auto-dismisses in 5s) */}
       <Modal

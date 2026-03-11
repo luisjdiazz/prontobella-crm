@@ -80,7 +80,8 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    const result = await clientsQ.update(req.params.id, req.body);
+    const { name, phone, email, birthday, source } = req.body;
+    const result = await clientsQ.update(req.params.id, { name, phone, email, birthday, source });
     if (!result.rows[0]) {
       return res.status(404).json({ error: 'Cliente no encontrado' });
     }

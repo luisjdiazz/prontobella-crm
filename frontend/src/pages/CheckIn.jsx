@@ -6,6 +6,7 @@ export default function CheckIn() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [acceptsPromos, setAcceptsPromos] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -19,7 +20,7 @@ export default function CheckIn() {
     setLoading(true);
     setError('');
     try {
-      const data = await api.post('/checkin', { name, phone, email });
+      const data = await api.post('/checkin', { name, phone, email, accepts_promos: acceptsPromos });
       setResult(data);
       setStep('success');
     } catch (err) {
@@ -27,15 +28,6 @@ export default function CheckIn() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleReset = () => {
-    setStep('form');
-    setName('');
-    setPhone('');
-    setEmail('');
-    setResult(null);
-    setError('');
   };
 
   if (step === 'success') {
@@ -50,14 +42,10 @@ export default function CheckIn() {
           <h2 className="font-heading text-2xl font-bold text-primary mb-2">
             {result?.client?.is_new ? 'Bienvenida!' : 'Hola de nuevo!'}
           </h2>
-          <p className="text-text-light text-sm mb-5">{result?.message}</p>
+          <p className="text-text-light text-sm mb-6">{result?.message}</p>
 
-          <button
-            onClick={handleReset}
-            className="w-full py-4 rounded-2xl border-2 border-primary text-primary font-medium text-base active:scale-[0.98] transition-transform"
-          >
-            Nuevo registro
-          </button>
+          <p className="text-text text-base font-medium mb-2">Eso es todo, gracias!</p>
+          <p className="text-text-light text-sm">Ya puedes cerrar esta pagina</p>
         </div>
       </div>
     );
@@ -125,6 +113,26 @@ export default function CheckIn() {
                 focus:outline-none focus:border-primary transition-colors"
             />
           </div>
+
+          {/* Promos opt-in */}
+          <button
+            type="button"
+            onClick={() => setAcceptsPromos(!acceptsPromos)}
+            className="flex items-center gap-3 p-4 rounded-2xl border-2 transition-colors text-left active:scale-[0.98]
+              ${acceptsPromos ? 'border-primary bg-primary-soft' : 'border-gray-200 bg-white'}"
+          >
+            <div className={`w-7 h-7 rounded-lg border-2 flex items-center justify-center shrink-0 transition-colors
+              ${acceptsPromos ? 'bg-primary border-primary' : 'border-gray-300 bg-white'}`}>
+              {acceptsPromos && (
+                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+            </div>
+            <span className="text-sm text-text">
+              Quiero recibir promociones y ofertas exclusivas a mi celular
+            </span>
+          </button>
 
           {error && <p className="text-danger text-sm text-center">{error}</p>}
 
