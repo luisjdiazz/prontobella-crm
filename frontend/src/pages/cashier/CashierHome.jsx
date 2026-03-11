@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../api/client';
 import Button from '../../components/ui/Button';
@@ -22,9 +22,9 @@ export default function CashierHome() {
   const [client, setClient] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
-  const [searchError, setSearchError] = useState('');
   const [todayVisits, setTodayVisits] = useState([]);
   const [loadingVisits, setLoadingVisits] = useState(true);
+  const debounceRef = useRef(null);
 
   // Visit flow states
   const [visitLoading, setVisitLoading] = useState(false);
@@ -49,32 +49,36 @@ export default function CashierHome() {
       .finally(() => setLoadingVisits(false));
   }, []);
 
-  const searchClient = async () => {
-    if (!searchQuery.trim()) return;
-    setSearching(true);
-    setSearchError('');
+  // Live search as user types
+  const handleSearchChange = (value) => {
+    setSearchQuery(value);
     setClient(null);
-    setSearchResults([]);
-    try {
-      const isPhone = /^\d/.test(searchQuery.trim());
-      if (isPhone) {
-        const data = await api.get(`/clients/search?phone=${encodeURIComponent(searchQuery)}`);
-        setClient(data);
-      } else {
-        const data = await api.get(`/clients/search?q=${encodeURIComponent(searchQuery)}`);
-        if (data.length === 0) {
-          setSearchError('No se encontraron clientes');
-        } else if (data.length === 1) {
-          setClient(data[0]);
-        } else {
-          setSearchResults(data);
-        }
-      }
-    } catch (err) {
-      setSearchError(err.message);
-    } finally {
-      setSearching(false);
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    if (!value.trim() || value.trim().length < 2) {
+      setSearchResults([]);
+      return;
     }
+
+    debounceRef.current = setTimeout(async () => {
+      setSearching(true);
+      try {
+        const q = value.trim();
+        const data = await api.get(`/clients/search?q=${encodeURIComponent(q)}`);
+        setSearchResults(data);
+      } catch {
+        setSearchResults([]);
+      } finally {
+        setSearching(false);
+      }
+    }, 300);
+  };
+
+  const selectClient = (c) => {
+    setClient(c);
+    setSearchResults([]);
+    setSearchQuery(c.name);
   };
 
   const registerVisit = async () => {
@@ -133,6 +137,7 @@ export default function CashierHome() {
     setSearchQuery('');
     setSearchResults([]);
     setCurrentVisit(null);
+    setShowGoogleQuestion(false);
   };
 
   const createNewClient = async (e) => {
@@ -182,39 +187,39 @@ export default function CashierHome() {
       {/* Search section */}
       <Card>
         <h2 className="font-heading text-lg font-semibold text-primary mb-3">Buscar Cliente</h2>
-        <div className="flex gap-2">
-          <Input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Nombre, apellido o telefono"
-            className="flex-1"
-            autoComplete="off"
-            onKeyDown={(e) => e.key === 'Enter' && searchClient()}
-          />
-          <Button onClick={searchClient} disabled={searching}>
-            {searching ? '...' : 'Buscar'}
-          </Button>
-        </div>
-        {searchError && <p className="text-danger text-sm mt-2">{searchError}</p>}
+        <input
+          value={searchQuery}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          placeholder="Nombre, apellido o telefono..."
+          autoComplete="off"
+          className="w-full px-4 py-4 rounded-2xl border-2 border-gray-200 text-base
+            bg-white text-text placeholder:text-gray-300
+            focus:outline-none focus:border-primary transition-colors"
+        />
 
-        {/* Search results list */}
-        {searchResults.length > 0 && (
+        {/* Live search results */}
+        {searching && <p className="text-xs text-text-light mt-2">Buscando...</p>}
+
+        {!client && searchResults.length > 0 && (
           <div className="mt-3 flex flex-col gap-2">
-            <p className="text-xs text-text-light">{searchResults.length} resultados</p>
             {searchResults.map((c) => (
               <button
                 key={c.id}
-                onClick={() => { setClient(c); setSearchResults([]); }}
-                className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-primary-soft active:scale-[0.98] transition-all text-left"
+                onClick={() => selectClient(c)}
+                className="flex items-center justify-between p-4 rounded-xl bg-gray-50 active:bg-primary-soft active:scale-[0.98] transition-all text-left"
               >
                 <div>
-                  <p className="font-medium text-sm">{c.name}</p>
+                  <p className="font-medium">{c.name}</p>
                   <p className="text-xs text-text-light">{c.phone}</p>
                 </div>
                 <Badge color="primary">{c.visit_count || 0} visitas</Badge>
               </button>
             ))}
           </div>
+        )}
+
+        {!client && !searching && searchQuery.trim().length >= 2 && searchResults.length === 0 && (
+          <p className="text-text-light text-sm mt-2">No se encontraron clientes</p>
         )}
 
         <button

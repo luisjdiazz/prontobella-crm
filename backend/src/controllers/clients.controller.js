@@ -32,12 +32,12 @@ exports.getOne = async (req, res, next) => {
 exports.search = async (req, res, next) => {
   try {
     const { phone, q } = req.query;
-    // Search by name
+    // Unified search by name or phone
     if (q) {
       const result = await clientsQ.findAll(q, 10, 0);
       return res.json(result.rows);
     }
-    // Search by phone
+    // Exact phone search
     if (!phone) {
       return res.status(400).json({ error: 'Teléfono o nombre requerido para búsqueda' });
     }
