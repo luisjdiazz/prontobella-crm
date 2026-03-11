@@ -26,3 +26,14 @@ exports.create = ({ client_id, notes, created_by }) =>
 
 exports.countByClient = (clientId) =>
   query('SELECT COUNT(*) FROM visits WHERE client_id = $1', [clientId]);
+
+exports.findByDate = (date) =>
+  query(
+    `SELECT v.*, c.name AS client_name, c.phone AS client_phone, c.source AS client_source,
+     (SELECT json_agg(json_build_object('procedure_type', sp.procedure_type))
+      FROM special_procedures sp WHERE sp.visit_id = v.id) AS procedures
+     FROM visits v JOIN clients c ON v.client_id = c.id
+     WHERE v.visited_at::date = $1
+     ORDER BY v.visited_at DESC`,
+    [date]
+  );

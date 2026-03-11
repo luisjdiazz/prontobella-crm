@@ -22,6 +22,19 @@ exports.getToday = async (req, res, next) => {
   }
 };
 
+exports.getByDate = async (req, res, next) => {
+  try {
+    const { date } = req.query;
+    if (!date) {
+      return res.status(400).json({ error: 'date requerido (YYYY-MM-DD)' });
+    }
+    const result = await visitsQ.findByDate(date);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.create = async (req, res, next) => {
   try {
     const { client_id, notes, created_by } = req.body;

@@ -59,9 +59,6 @@ export default function ClientDetail() {
           </div>
           <div className="text-right">
             <Badge color="primary" className="text-base">{client.visit_count || 0} visitas</Badge>
-            {client.vip_code && (
-              <p className="text-sm text-secondary-deep mt-2">VIP: {client.vip_code}</p>
-            )}
           </div>
         </div>
         {client.last_visit && (
@@ -69,9 +66,14 @@ export default function ClientDetail() {
             Última visita: {new Date(client.last_visit).toLocaleDateString('es-DO')}
           </p>
         )}
-        <p className="text-xs text-text-light mt-1">
-          Registrada: {new Date(client.created_at).toLocaleDateString('es-DO')} via {client.source}
-        </p>
+        <div className="flex items-center gap-2 mt-2">
+          <span className="text-xs text-text-light">
+            Registrada: {new Date(client.created_at).toLocaleDateString('es-DO')}
+          </span>
+          <Badge color={client.source === 'google' ? 'warning' : client.source === 'qr' ? 'secondary' : 'gray'}>
+            {client.source === 'google' ? 'Google' : client.source === 'qr' ? 'QR' : client.source === 'cashier' ? 'Cajera' : 'Manual'}
+          </Badge>
+        </div>
       </Card>
 
       <div className="grid lg:grid-cols-2 gap-4">
