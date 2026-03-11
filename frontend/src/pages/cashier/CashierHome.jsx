@@ -166,16 +166,29 @@ export default function CashierHome() {
     }
   };
 
+  // Auto-reset success screen after 10 seconds
+  useEffect(() => {
+    if (showSuccess) {
+      const timer = setTimeout(nextClient, 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccess]);
+
   // Success screen
   if (showSuccess) {
     return (
-      <div className="text-center py-12">
-        <div className="text-6xl mb-4">✅</div>
-        <h2 className="font-heading text-2xl font-bold text-primary mb-2">¡Visita Registrada!</h2>
+      <div className="text-center py-12" onClick={nextClient}>
+        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h2 className="font-heading text-2xl font-bold text-primary mb-2">Visita registrada</h2>
         <p className="text-text-light mb-6">{client?.name}</p>
         <Button onClick={nextClient} size="xl" className="w-full">
-          Siguiente Clienta →
+          Siguiente clienta
         </Button>
+        <p className="text-xs text-text-light mt-4">Vuelve automaticamente en 10 segundos</p>
       </div>
     );
   }
