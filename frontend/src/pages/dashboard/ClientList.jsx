@@ -1,15 +1,27 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFetch } from '../../hooks/useFetch';
+import { api } from '../../api/client';
 import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Badge from '../../components/ui/Badge';
 import Spinner from '../../components/ui/Spinner';
+import Modal from '../../components/ui/Modal';
+import Toast from '../../components/ui/Toast';
 
 export default function ClientList() {
   const [search, setSearch] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
+
+  // New client form
+  const [showNewClient, setShowNewClient] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newPhone, setNewPhone] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [newBirthday, setNewBirthday] = useState('');
+  const [newClientLoading, setNewClientLoading] = useState(false);
+  const [toast, setToast] = useState(null);
 
   const { data, loading } = useFetch(
     `/clients?search=${encodeURIComponent(searchTerm)}&limit=50`,
@@ -21,11 +33,47 @@ export default function ClientList() {
     setSearchTerm(search);
   };
 
+  const createNewClient = async (e) => {
+    e.preventDefault();
+    if (!newName.trim() || !newPhone.trim()) return;
+    setNewClientLoading(true);
+    try {
+      const data = await api.post('/clients', {
+        name: newName,
+        phone: newPhone,
+        email: newEmail || undefined,
+        birthday: newBirthday || undefined,
+        source: 'manual',
+      });
+      setShowNewClient(false);
+      setNewName('');
+      setNewPhone('');
+      setNewEmail('');
+      setNewBirthday('');
+      setToast({ message: 'Cliente registrada', type: 'success' });
+      navigate(`/dashboard/clientes/${data.id}`);
+    } catch (err) {
+      setToast({ message: err.message, type: 'error' });
+    } finally {
+      setNewClientLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4">
+      {toast && <Toast {...toast} onClose={() => setToast(null)} />}
+
       <div className="flex items-center justify-between">
         <h1 className="font-heading text-2xl font-bold text-primary">Clientes</h1>
-        <span className="text-sm text-text-light">{data?.total || 0} total</span>
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-text-light">{data?.total || 0} total</span>
+          <button
+            onClick={() => setShowNewClient(true)}
+            className="px-4 py-2 bg-primary text-white rounded-xl font-medium hover:bg-primary-deep transition text-sm"
+          >
+            + Nueva Cliente
+          </button>
+        </div>
       </div>
 
       <form onSubmit={handleSearch} className="flex gap-2">
@@ -39,6 +87,44 @@ export default function ClientList() {
           Buscar
         </button>
       </form>
+
+      {/* New Client Modal */}
+      <Modal isOpen={showNewClient} onClose={() => setShowNewClient(false)} title="Nueva Cliente">
+        <form onSubmit={createNewClient} className="flex flex-col gap-3">
+          <Input
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            placeholder="Nombre completo *"
+            required
+          />
+          <Input
+            type="tel"
+            value={newPhone}
+            onChange={(e) => setNewPhone(e.target.value)}
+            placeholder="Teléfono * (809-000-0000)"
+            required
+          />
+          <Input
+            type="email"
+            value={newEmail}
+            onChange={(e) => setNewEmail(e.target.value)}
+            placeholder="Email (opcional)"
+          />
+          <Input
+            value={newBirthday}
+            onChange={(e) => setNewBirthday(e.target.value)}
+            placeholder="Cumpleaños (DD/MM, opcional)"
+            maxLength={5}
+          />
+          <button
+            type="submit"
+            disabled={newClientLoading || !newName.trim() || !newPhone.trim()}
+            className="mt-2 w-full py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary-deep transition disabled:opacity-50"
+          >
+            {newClientLoading ? 'Registrando...' : 'Registrar Cliente'}
+          </button>
+        </form>
+      </Modal>
 
       <Card className="overflow-hidden p-0">
         {loading ? (
