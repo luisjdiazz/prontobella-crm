@@ -45,6 +45,7 @@ app.use('/api/procedures', authenticate, require('./routes/procedures.routes'));
 app.use('/api/dashboard', authenticate, requireRole('owner'), require('./routes/dashboard.routes'));
 app.use('/api/automations', authenticate, requireRole('owner'), require('./routes/automations.routes'));
 app.use('/api/seguimiento', authenticate, requireRole('owner'), require('./routes/seguimiento.routes'));
+app.use('/api/export', authenticate, requireRole('owner'), require('./routes/export.routes'));
 
 // Error handler
 app.use(errorHandler);
@@ -53,6 +54,36 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`✅ ProntoBella API corriendo en http://localhost:${PORT}`);
 });
+
+// Daily backup — runs every 24 hours
+const exportService = require('./services/export.service');
+const fs = require('fs');
+const path = require('path');
+
+async function runDailyBackup() {
+  try {
+    const backupDir = path.join(__dirname, '..', 'backups');
+    if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });
+
+    const { buffer, clients, visits, procedures } = await exportService.generateBackup();
+    const filename = `prontobella_backup_${new Date().toISOString().split('T')[0]}.xlsx`;
+    fs.writeFileSync(path.join(backupDir, filename), Buffer.from(buffer));
+
+    // Keep only last 30 backups
+    const files = fs.readdirSync(backupDir).filter(f => f.endsWith('.xlsx')).sort();
+    while (files.length > 30) {
+      fs.unlinkSync(path.join(backupDir, files.shift()));
+    }
+
+    console.log(`Backup completado: ${filename} (${clients} clientes, ${visits} visitas, ${procedures} procedimientos)`);
+  } catch (err) {
+    console.error('Error en backup diario:', err.message);
+  }
+}
+
+// Run backup on startup and every 24 hours
+runDailyBackup();
+setInterval(runDailyBackup, 24 * 60 * 60 * 1000);
 
 // Automation engine — run on startup and every hour
 automationService.evaluateAndQueue()

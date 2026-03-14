@@ -22,6 +22,8 @@ export default function ClientList() {
   const [newBirthday, setNewBirthday] = useState('');
   const [newClientLoading, setNewClientLoading] = useState(false);
   const [toast, setToast] = useState(null);
+  const [showExport, setShowExport] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   const { data, loading } = useFetch(
     `/clients?search=${encodeURIComponent(searchTerm)}&limit=50`,
@@ -31,6 +33,56 @@ export default function ClientList() {
   const handleSearch = (e) => {
     e.preventDefault();
     setSearchTerm(search);
+  };
+
+  const downloadExport = async (params = '') => {
+    setExporting(true);
+    try {
+      const token = localStorage.getItem('token');
+      const base = import.meta.env.VITE_API_URL || '/api';
+      const res = await fetch(`${base}/export/clients${params ? `?${params}` : ''}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Error al exportar');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = res.headers.get('Content-Disposition')?.match(/filename="(.+)"/)?.[1] || 'clientes.xlsx';
+      a.click();
+      URL.revokeObjectURL(url);
+      setShowExport(false);
+      setToast({ message: 'Archivo descargado', type: 'success' });
+    } catch (err) {
+      setToast({ message: err.message, type: 'error' });
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const downloadBackup = async () => {
+    setExporting(true);
+    try {
+      const token = localStorage.getItem('token');
+      const base = import.meta.env.VITE_API_URL || '/api';
+      const res = await fetch(`${base}/export/backup`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Error al exportar');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = res.headers.get('Content-Disposition')?.match(/filename="(.+)"/)?.[1] || 'backup.xlsx';
+      a.click();
+      URL.revokeObjectURL(url);
+      setShowExport(false);
+      setToast({ message: 'Backup descargado', type: 'success' });
+    } catch (err) {
+      setToast({ message: err.message, type: 'error' });
+    } finally {
+      setExporting(false);
+    }
   };
 
   const createNewClient = async (e) => {
@@ -67,6 +119,12 @@ export default function ClientList() {
         <h1 className="font-heading text-2xl font-bold text-primary">Clientes</h1>
         <div className="flex items-center gap-3">
           <span className="text-sm text-text-light">{data?.total || 0} total</span>
+          <button
+            onClick={() => setShowExport(true)}
+            className="px-4 py-2 bg-secondary text-white rounded-xl font-medium hover:bg-secondary-deep transition text-sm"
+          >
+            Exportar
+          </button>
           <button
             onClick={() => setShowNewClient(true)}
             className="px-4 py-2 bg-primary text-white rounded-xl font-medium hover:bg-primary-deep transition text-sm"
@@ -124,6 +182,76 @@ export default function ClientList() {
             {newClientLoading ? 'Registrando...' : 'Registrar Cliente'}
           </button>
         </form>
+      </Modal>
+
+      {/* Export Modal */}
+      <Modal isOpen={showExport} onClose={() => setShowExport(false)} title="Exportar Clientes">
+        <div className="flex flex-col gap-3">
+          <p className="text-sm text-text-light mb-1">Exportar por periodo de registro:</p>
+          <button
+            onClick={() => downloadExport('period=today')}
+            disabled={exporting}
+            className="w-full py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary-deep transition disabled:opacity-50"
+          >
+            Hoy
+          </button>
+          <button
+            onClick={() => downloadExport('period=week')}
+            disabled={exporting}
+            className="w-full py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary-deep transition disabled:opacity-50"
+          >
+            Esta semana
+          </button>
+          <button
+            onClick={() => downloadExport('period=month')}
+            disabled={exporting}
+            className="w-full py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary-deep transition disabled:opacity-50"
+          >
+            Este mes
+          </button>
+          <button
+            onClick={() => downloadExport()}
+            disabled={exporting}
+            className="w-full py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary-deep transition disabled:opacity-50"
+          >
+            Todos los clientes
+          </button>
+
+          <p className="text-sm text-text-light mt-2 mb-1">Exportar por frecuencia de visitas:</p>
+          <button
+            onClick={() => downloadExport('minVisits=5')}
+            disabled={exporting}
+            className="w-full py-3 bg-secondary text-white rounded-xl font-medium hover:bg-secondary-deep transition disabled:opacity-50"
+          >
+            Frecuentes (5+ visitas)
+          </button>
+          <button
+            onClick={() => downloadExport('minVisits=2&maxVisits=4')}
+            disabled={exporting}
+            className="w-full py-3 bg-secondary text-white rounded-xl font-medium hover:bg-secondary-deep transition disabled:opacity-50"
+          >
+            Regulares (2-4 visitas)
+          </button>
+          <button
+            onClick={() => downloadExport('maxVisits=1')}
+            disabled={exporting}
+            className="w-full py-3 bg-secondary text-white rounded-xl font-medium hover:bg-secondary-deep transition disabled:opacity-50"
+          >
+            Nuevas (0-1 visitas)
+          </button>
+
+          <div className="border-t border-gray-100 pt-3 mt-1">
+            <button
+              onClick={downloadBackup}
+              disabled={exporting}
+              className="w-full py-3 bg-gray-800 text-white rounded-xl font-medium hover:bg-gray-900 transition disabled:opacity-50"
+            >
+              Backup completo (clientes + visitas + procedimientos)
+            </button>
+          </div>
+
+          {exporting && <p className="text-xs text-text-light text-center">Generando archivo...</p>}
+        </div>
       </Modal>
 
       <Card className="overflow-hidden p-0">
